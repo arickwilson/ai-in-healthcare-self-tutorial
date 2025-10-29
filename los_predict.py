@@ -361,7 +361,7 @@ def train_model(
     if tensorboard_logdir is not None:
         # create a unique child directory for this run under the provided logdir
         # e.g. tensorboard_logdir/<YYYYmmdd-HHMMSS>-<short-uuid>/
-        def _make_unique_run_dir(base_dir: str) -> str:
+        def make_unique_run_dir(base_dir: str) -> str:
             os.makedirs(base_dir, exist_ok=True)
             ts = datetime.now().strftime("%Y%m%d-%H%M%S")
             uid = uuid.uuid4().hex[:8]
@@ -374,7 +374,7 @@ def train_model(
                 os.makedirs(run_dir, exist_ok=True)
             return run_dir
 
-    unique_logdir = _make_unique_run_dir(tensorboard_logdir)
+    unique_logdir = make_unique_run_dir(tensorboard_logdir)
     writer = SummaryWriter(log_dir=unique_logdir)
 
     for epoch in range(1, epochs + 1):
@@ -457,33 +457,6 @@ def train_model(
             pass
 
     return model, history
-
-# def log_history_tensorboard(history: Dict[str, list], log_dir: str = "logs", run_name: Optional[str] = None) -> None:
-#     """Write a training `history` dictionary to TensorBoard logs.
-
-#     This is a convenience helper to convert an in-memory history dict (as
-#     returned by `train_model`) into TensorBoard scalars for later inspection.
-#     """
-#     out_dir = log_dir if run_name is None else os.path.join(log_dir, run_name)
-#     writer = SummaryWriter(log_dir=out_dir)
-#     n = 0
-#     # determine number of epochs from the first list in history
-#     for k, v in history.items():
-#         if isinstance(v, list) and len(v) > 0:
-#             n = max(n, len(v))
-
-#     for epoch in range(1, n + 1):
-#         for k, v in history.items():
-#             if isinstance(v, list) and len(v) >= epoch:
-#                 try:
-#                     value = float(v[epoch - 1])
-#                     writer.add_scalar(k, value, epoch)
-#                 except Exception:
-#                     # ignore non-scalar values
-#                     pass
-
-#     writer.close()
-
 
 if __name__ == "__main__":
     # this is my project ID for the BigQuery MIMIC-III dataset, update as needed
